@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Визуализатор многогранников</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>3D Визуализатор многогранников</h1>
+            <p>Используйте элементы управления для трансформации 3D фигур</p>
+        </header>
+        
+        <div class="canvas-container">
+            <canvas id="canvas" width="800" height="600"></canvas>
+        </div>
+        
+        <div class="controls">
+            <div class="control-group">
+                <h2>Выбор фигуры</h2>
+                <div class="form-group">
+                    <select id="figure-select">
+                        <option value="1">Тетраэдр</option>
+                        <option value="2" selected>Куб (Гексаэдр)</option>
+                        <option value="3">Октаэдр</option>
+                        <option value="4">Икосаэдр</option>
+                        <option value="5">Додекаэдр</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <h2>Проекция</h2>
+                <div class="projection-buttons">
+                    <button id="perspectiveButton" class="active-button">Перспективная</button>
+                    <button id="axonometricButton">Аксонометрическая</button>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <h2>Вращение</h2>
+                <div class="form-group">
+                    <label>X: <span id="rotateXValue">0°</span></label>
+                    <input type="range" id="rotateX" min="0" max="360" step="1" value="0">
+                </div>
+                <div class="form-group">
+                    <label>Y: <span id="rotateYValue">0°</span></label>
+                    <input type="range" id="rotateY" min="0" max="360" step="1" value="0">
+                </div>
+                <div class="form-group">
+                    <label>Z: <span id="rotateZValue">0°</span></label>
+                    <input type="range" id="rotateZ" min="0" max="360" step="1" value="0">
+                </div>
+            </div>
+
+            <div class="control-group">
+                <h2>Масштаб и смещение</h2>
+                <div class="form-group">
+                    <label>Масштаб: <span id="scaleValue">1.0</span></label>
+                    <input type="range" id="scale" min="0.1" max="5" step="0.1" value="1">
+                </div>
+                <div class="form-group">
+                    <label>Смещение X: <span id="translateXValue">0</span></label>
+                    <input type="range" id="translateX" min="-3" max="3" step="0.1" value="0">
+                </div>
+                <div class="form-group">
+                    <label>Смещение Y: <span id="translateYValue">0</span></label>
+                    <input type="range" id="translateY" min="-3" max="3" step="0.1" value="0">
+                </div>
+                <div class="form-group">
+                    <label>Смещение Z: <span id="translateZValue">0</span></label>
+                    <input type="range" id="translateZ" min="-3" max="3" step="0.1" value="0">
+                </div>
+            </div>
+
+            <div class="control-group">
+                <h2>Отражение</h2>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="reflectXY">
+                    <label for="reflectXY">Относительно XY</label>
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="reflectXZ">
+                    <label for="reflectXZ">Относительно XZ</label>
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="reflectYZ">
+                    <label for="reflectYZ">Относительно YZ</label>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <h2>Вращение вокруг прямой через центр</h2>
+                <div class="parallel-buttons axis-buttons">
+                    <button id="parallelX" class="active-button">Параллельно X</button>
+                    <button id="parallelY">Параллельно Y</button>
+                    <button id="parallelZ">Параллельно Z</button>
+                </div>
+                <div class="form-group">
+                    <label>Смещение Y: <span id="parallelOffsetYValue">0</span></label>
+                    <input type="range" id="parallelOffsetY" min="-2" max="2" step="0.1" value="0">
+                </div>
+                <div class="form-group">
+                    <label>Смещение Z: <span id="parallelOffsetZValue">0</span></label>
+                    <input type="range" id="parallelOffsetZ" min="-2" max="2" step="0.1" value="0">
+                </div>
+                <div class="form-group">
+                    <label>Угол: <span id="parallelRotationValue">0°</span></label>
+                    <input type="range" id="parallelRotation" min="0" max="360" step="1" value="0">
+                </div>
+            </div>
+
+            <div class="control-group">
+                <h2>Вращение вокруг произвольной прямой</h2>
+                <div class="form-group">
+                    <label>Точка A:</label>
+                    <div class="coordinate-inputs">
+                        <input type="number" id="AxInput" value="0" step="0.1">
+                        <input type="number" id="AyInput" value="0" step="0.1">
+                        <input type="number" id="AzInput" value="0" step="0.1">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Точка B:</label>
+                    <div class="coordinate-inputs">
+                        <input type="number" id="BxInput" value="1" step="0.1">
+                        <input type="number" id="ByInput" value="0" step="0.1">
+                        <input type="number" id="BzInput" value="0" step="0.1">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Угол: <span id="angleValue">0°</span></label>
+                    <input type="range" id="angleRotationLine" min="0" max="360" step="1" value="0">
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
