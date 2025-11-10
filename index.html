@@ -3,14 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3D Визуализатор многогранников</title>
+    <title>3D Визуализатор</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>3D Визуализатор многогранников</h1>
-            <p>Используйте элементы управления для трансформации 3D фигур</p>
+            <h1>3D Визуализатор</h1>
         </header>
         
         <div class="canvas-container">
@@ -18,19 +17,96 @@
         </div>
         
         <div class="controls">
-            <div class="control-group">
-                <h2>Выбор фигуры</h2>
-                <div class="form-group">
-                    <select id="figure-select">
-                        <option value="1">Тетраэдр</option>
-                        <option value="2" selected>Куб (Гексаэдр)</option>
-                        <option value="3">Октаэдр</option>
-                        <option value="4">Икосаэдр</option>
-                        <option value="5">Додекаэдр</option>
-                    </select>
+            <!-- Вкладки -->
+            <div class="tabs">
+                <button class="tab-button active" data-tab="basic">Базовые фигуры</button>
+                <button class="tab-button" data-tab="rotation">Фигуры вращения</button>
+                <button class="tab-button" data-tab="surface">Поверхности</button>
+            </div>
+
+            <!-- Вкладка базовых фигур -->
+            <div id="basic-tab" class="tab-content active">
+                <div class="control-group">
+                    <h2>Выбор фигуры</h2>
+                    <div class="form-group">
+                        <select id="figure-select">
+                            <option value="1">Тетраэдр</option>
+                            <option value="2" selected>Куб (Гексаэдр)</option>
+                            <option value="3">Октаэдр</option>
+                            <option value="4">Икосаэдр</option>
+                            <option value="5">Додекаэдр</option>
+                            <option value="loaded">Загруженная модель</option>
+                        </select>
+                    </div>
+                    <div class="button-group">
+                        <button id="loadObjButton">Загрузить OBJ</button>
+                        <button id="saveObjButton">Сохранить OBJ</button>
+                    </div>
                 </div>
             </div>
 
+            <!-- Вкладка фигур вращения -->
+            <div id="rotation-tab" class="tab-content">
+                <div class="control-group">
+                    <h2>Фигура вращения</h2>
+                    <div class="form-group">
+                        <label>Образующая (точки x,y,z через запятую, каждая точка с новой строки):</label>
+                        <textarea id="profilePoints" rows="6" placeholder="0,0,0
+1,0,0
+1,1,0
+0,1,0"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Ось вращения:</label>
+                        <select id="rotationAxis">
+                            <option value="x">X</option>
+                            <option value="y" selected>Y</option>
+                            <option value="z">Z</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Количество разбиений: <span id="slicesValue">12</span></label>
+                        <input type="range" id="slices" min="4" max="36" step="2" value="12">
+                    </div>
+                    <div class="button-group">
+                        <button id="createRotationButton">Построить фигуру вращения</button>
+                        <button id="saveRotationButton">Сохранить OBJ</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Вкладка поверхностей -->
+            <div id="surface-tab" class="tab-content">
+                <div class="control-group">
+                    <h2>Поверхность функции</h2>
+                    <div class="form-group">
+                        <label>Функция f(x,y):</label>
+                        <select id="functionSelect">
+                            <option value="paraboloid">z = x² + y² (параболоид)</option>
+                            <option value="hyperbolic">z = x² - y² (гиперболический параболоид)</option>
+                            <option value="sinc">z = sin(√(x²+y²)) / √(x²+y²)</option>
+                            <option value="wave">z = sin(x) * cos(y)</option>
+                            <option value="sphere">z = √(1 - x² - y²) (сфера)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Диапазон X: от <input type="number" id="xMin" value="-1" step="0.1"> до <input type="number" id="xMax" value="1" step="0.1"></label>
+                    </div>
+                    <div class="form-group">
+                        <label>Диапазон Y: от <input type="number" id="yMin" value="-1" step="0.1"> до <input type="number" id="yMax" value="1" step="0.1"></label>
+                    </div>
+                    <div class="form-group">
+                        <label>Количество разбиений: <span id="gridSizeValue">20</span></label>
+                        <input type="range" id="gridSize" min="5" max="50" step="1" value="20">
+                    </div>
+                    <div class="button-group">
+                        <button id="createSurfaceButton">Построить поверхность</button>
+                        <button id="saveSurfaceButton">Сохранить OBJ</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Общие элементы управления -->
             <div class="control-group">
                 <h2>Проекция</h2>
                 <div class="projection-buttons">
@@ -90,53 +166,12 @@
                     <label for="reflectYZ">Относительно YZ</label>
                 </div>
             </div>
-
-            <div class="control-group">
-                <h2>Вращение вокруг прямой через центр</h2>
-                <div class="parallel-buttons axis-buttons">
-                    <button id="parallelX" class="active-button">Параллельно X</button>
-                    <button id="parallelY">Параллельно Y</button>
-                    <button id="parallelZ">Параллельно Z</button>
-                </div>
-                <div class="form-group">
-                    <label>Смещение Y: <span id="parallelOffsetYValue">0</span></label>
-                    <input type="range" id="parallelOffsetY" min="-2" max="2" step="0.1" value="0">
-                </div>
-                <div class="form-group">
-                    <label>Смещение Z: <span id="parallelOffsetZValue">0</span></label>
-                    <input type="range" id="parallelOffsetZ" min="-2" max="2" step="0.1" value="0">
-                </div>
-                <div class="form-group">
-                    <label>Угол: <span id="parallelRotationValue">0°</span></label>
-                    <input type="range" id="parallelRotation" min="0" max="360" step="1" value="0">
-                </div>
-            </div>
-
-            <div class="control-group">
-                <h2>Вращение вокруг произвольной прямой</h2>
-                <div class="form-group">
-                    <label>Точка A:</label>
-                    <div class="coordinate-inputs">
-                        <input type="number" id="AxInput" value="0" step="0.1">
-                        <input type="number" id="AyInput" value="0" step="0.1">
-                        <input type="number" id="AzInput" value="0" step="0.1">
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label>Точка B:</label>
-                    <div class="coordinate-inputs">
-                        <input type="number" id="BxInput" value="1" step="0.1">
-                        <input type="number" id="ByInput" value="0" step="0.1">
-                        <input type="number" id="BzInput" value="0" step="0.1">
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label>Угол: <span id="angleValue">0°</span></label>
-                    <input type="range" id="angleRotationLine" min="0" max="360" step="1" value="0">
-                </div>
-            </div>
         </div>
     </div>
+
+    <!-- Скрытый input для загрузки файлов -->
+    <input type="file" id="fileInput" accept=".obj" style="display: none;">
+    
     <script src="script.js"></script>
 </body>
 </html>
