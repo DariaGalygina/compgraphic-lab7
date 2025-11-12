@@ -225,10 +225,12 @@ class OBJLoader {
 
 // Класс для создания фигур вращения
 class RotationFigureBuilder {
+    // Параметры - Образующая (массив точек), ось вращения, количество разбиений (секторов)
     static createRotationFigure(profilePoints, axis, slices) {
         const vertices = [];
         const faces = [];
         
+        // Угол вращений
         const angleStep = (2 * Math.PI) / slices;
         
         // Создаем вершины
@@ -238,6 +240,7 @@ class RotationFigureBuilder {
             for (const point of profilePoints) {
                 let x, y, z;
                 
+                // Каждая точка образующей вращается вокруг выбранной оси с шагом angleStep
                 switch (axis) {
                     case 'x':
                         // Вращение вокруг оси X
@@ -271,10 +274,10 @@ class RotationFigureBuilder {
                 const currentSlice = i * pointsPerSlice;
                 const nextSlice = ((i + 1) % (slices + 1)) * pointsPerSlice;
                 
-                const v1 = currentSlice + j;
-                const v2 = currentSlice + j + 1;
-                const v3 = nextSlice + j + 1;
-                const v4 = nextSlice + j;
+                const v1 = currentSlice + j;        // (точка 0 текущего сектора)
+                const v2 = currentSlice + j + 1;    // (точка 1 текущего сектора) 
+                const v3 = nextSlice + j + 1;       // (точка 1 следующего сектора)
+                const v4 = nextSlice + j;           // (точка 0 следующего сектора)
                 
                 // Два треугольника для квадрата
                 faces.push([v1, v2, v3]);
@@ -288,6 +291,7 @@ class RotationFigureBuilder {
 
 // Класс для создания поверхностей
 class SurfaceBuilder {
+    // funcType - тип поверхности; xMin, xMax, yMin, yMax - область определения; gridSize - детализация сетки
     static createSurface(funcType, xMin, xMax, yMin, yMax, gridSize) {
         const vertices = [];
         const faces = [];
